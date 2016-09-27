@@ -1,6 +1,9 @@
 package com.virtualpairprogrammers;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -86,9 +89,11 @@ public class PositionsimulatorApplication {
 
 		for (Resource nextFile : path.getResources("tracks/*"))
 		{
-			String vehicleName = nextFile.getFilename();
-
-			try (Scanner sc = new Scanner(nextFile.getFile()))
+			URL resource = nextFile.getURL();
+			File f = new File(resource.getFile()); 
+			String vehicleName = f.getName();
+			InputStream is = PositionsimulatorApplication.class.getResourceAsStream("/tracks/" + f.getName());
+			try (Scanner sc = new Scanner(is))
 			{
 				List<String> thisVehicleReports = new ArrayList<>();
 				while (sc.hasNextLine())
