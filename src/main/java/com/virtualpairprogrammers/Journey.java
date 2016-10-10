@@ -18,12 +18,14 @@ public class Journey implements Callable<Object>
 	private List<String> positions;
 	private String vehicleName;
 	private JmsTemplate jmsTemplate;
+	private String queueName;
 
-	public Journey(String vehicleName, List<String> positions, JmsTemplate jmsTemplate) 
+	public Journey(String vehicleName, List<String> positions, JmsTemplate jmsTemplate, String queueName) 
 	{
 		this.positions = Collections.unmodifiableList(positions);
 		this.vehicleName = vehicleName;
 		this.jmsTemplate = jmsTemplate;
+		this.queueName = queueName;
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class Journey implements Callable<Object>
 			// broadcast this report
 			try
 			{
-				jmsTemplate.convertAndSend("positionQueue",positionMessage);
+				jmsTemplate.convertAndSend(queueName,positionMessage);
 				messageNotSent = false;
 			}
 			catch (UncategorizedJmsException e)

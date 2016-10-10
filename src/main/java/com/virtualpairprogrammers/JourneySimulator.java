@@ -13,9 +13,13 @@ import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jms.core.JmsTemplate;
@@ -26,6 +30,9 @@ public class JourneySimulator implements Runnable {
 
 	@Autowired
 	private JmsTemplate template;
+	
+	@Value("${fleetman.position.queue}")
+	private String queueName;
 
 	private ExecutorService threadPool;
 
@@ -58,7 +65,7 @@ public class JourneySimulator implements Runnable {
 			for (String vehicleName : reports.keySet())
 			{
 				// kick off a message sending thread for this vehicle.
-				calls.add(new Journey(vehicleName, reports.get(vehicleName), template));
+				calls.add(new Journey(vehicleName, reports.get(vehicleName), template, queueName));
 			}
 			
 			threadPool.invokeAll(calls);
